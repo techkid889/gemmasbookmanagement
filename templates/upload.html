@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemma's Book Uploader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Gemma's Book Uploader</h1>
+
+<form id="upload-form" action="/" method="post" enctype="multipart/form-data">
+    <input type="file" id="file-input" name="file" onchange="loadMetadata()">
+    <br>
+
+    <div id="metadata-container" style="display:none;">
+        <img id="cover-image" alt="Cover Image">
+        <br>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        <br>
+        <label for="authors">Authors:</label>
+        <input type="text" id="authors" name="authors">
+    </div>
+
+    <br>
+    <button type="submit">Upload</button>
+</form>
+
+<script>
+    function loadMetadata() {
+        const fileInput = document.getElementById('file-input');
+        const metadataContainer = document.getElementById('metadata-container');
+        const coverImage = document.getElementById('cover-image');
+        const titleInput = document.getElementById('title');
+        const authorsInput = document.getElementById('authors');
+
+        if (fileInput.files.length > 0) {
+            metadataContainer.style.display = 'block';
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const data = e.target.result;
+
+                // Simulate form submission to retrieve metadata
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const metadata = JSON.parse(xhr.responseText);
+
+                        coverImage.src = metadata.cover_image;
+                        titleInput.value = metadata.title;
+                        authorsInput.value = metadata.authors;
+                    }
+                };
+
+                xhr.open('POST', '/', true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.send(formData);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+</body>
+</html>
