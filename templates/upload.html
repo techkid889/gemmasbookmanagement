@@ -1,4 +1,4 @@
-? <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -59,48 +59,20 @@
     <br>
 
     <div id="metadata-container" style="display:none;">
-        <!-- Existing form elements -->
-<label for="title">Title:</label>
-<input type="text" id="title" name="title">
-<br>
-<label for="authors">Authors:</label>
-<input type="text" id="authors" name="authors">
-<br>
-<!-- New button for updating metadata -->
-<button type="button" onclick="updateMetadata()">Update Metadata</button>
-
+        <img id="cover-image" alt="Cover Image">
+        <br>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+        <br>
+        <label for="authors">Authors:</label>
+        <input type="text" id="authors" name="authors">
     </div>
 
     <br>
     <button type="submit">Upload</button>
-    
 </form>
 
 <script>
-
-function updateMetadata() {
-    const title = document.getElementById('title').value;
-    const authors = document.getElementById('authors').value;
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('authors', authors);
-
-    fetch('/update-metadata', { // Adjust the URL to your Flask route
-        method: 'POST',
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        alert('Metadata updated successfully!');
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        alert('Failed to update metadata.');
-    });
-}
-
-
     function loadMetadata() {
         const fileInput = document.getElementById('file-input');
         const metadataContainer = document.getElementById('metadata-container');
@@ -140,9 +112,7 @@ function updateMetadata() {
             reader.readAsDataURL(file);
         }
     }
-    
 </script>
 
 </body>
 </html>
-
