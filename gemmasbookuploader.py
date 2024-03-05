@@ -10,9 +10,13 @@ from lxml import etree
 app = Flask(__name__)
 
 UPLOAD_FOLDER = '/config/'
+BOOKS_FOLDER = '/app/books/'
+DOWNLOADS_FOLDER = '/app/downloads/'
 ALLOWED_EXTENSIONS = {'epub'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['BOOKS_FOLDER'] = BOOKS_FOLDER
+app.config['DOWNLOADS_FOLDER'] = DOWNLOADS_FOLDER
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -94,6 +98,17 @@ def update_epub_metadata(epub_file, new_title, new_authors):
 
     return title, authors
 
+def get_books_in_library():
+    books = []
+    for root, dirs, files in os.walk(app.config['BOOKS_FOLDER']):
+        for file in files:
+            if file.endswith('.epub'):
+                file_path = os.path.join(root, file)
+                metadata = get_epub_metadata(file_path)
+                if metadata:
+                    metadata['file_path'] = file_path
+                    books.append(metadata)
+    return books
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -122,10 +137,10 @@ def upload_file():
                 current_metadata['title'], current_metadata['authors'] = update_epub_metadata(file_path, new_title, new_authors)
 
                 # Set the destination path for later use
-                new_path = os.path.join('/app/downloads', filename)
+                new_path = os.path.join(app.config['DOWNLOADS_FOLDER'], filename)
                 print(f"File will be moved to: {new_path}")
 
-    # Move the file to /app/downloads if new_path is set (button was clicked)
+    # Move the file to /app/books if new_path is set (button was clicked)
     if new_path:
         shutil.move(file_path, new_path)
         print(f"Moved file to: {new_path}")
@@ -135,7 +150,13 @@ def upload_file():
         return jsonify(current_metadata)
 
     # Handle initial page load
-    return render_template('upload.html', current_metadata=current_metadata)
+    books_in_library = get_books_in_library()
+    return render_template('upload.html', current_metadata=current_metadata, books=books_in_library)
+
+@app.route('/library')
+def library():
+    books_in_library = get_books_in_library()
+    return render_template('library.html', books=books_in_library)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

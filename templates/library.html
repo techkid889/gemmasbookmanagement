@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemma's Book Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .book-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .book {
+            margin: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .book img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .book-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .book-author {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Gemma's Book Library</h1>
+
+<div class="book-container">
+    {% for book in books %}
+        <div class="book">
+            <img src="{{ book.cover_image }}" alt="Cover Image">
+            <div class="book-title">{{ book.title }}</div>
+            <div class="book-author">{{ book.authors }}</div>
+        </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

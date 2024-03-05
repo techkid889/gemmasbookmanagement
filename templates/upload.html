@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemma's Book Uploader</title>
+    <title>Gemma's Book Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,8 +16,12 @@
             color: #333;
         }
 
-        form {
-            max-width: 400px;
+        .tab {
+            display: none;
+        }
+
+        form, .tab-content {
+            max-width: 800px; /* Adjusted max-width for 5 books horizontally */
             margin: 20px auto;
             background-color: #fff;
             padding: 20px;
@@ -35,8 +39,9 @@
         }
 
         img {
-            max-width: 100%;
-            height: auto;
+            width: 100px; /* Set the size of the cover image */
+            height: 150px; /* Set the size of the cover image */
+            border-radius: 4px;
             margin-bottom: 10px;
         }
 
@@ -48,37 +53,109 @@
             border-radius: 4px;
             cursor: pointer;
         }
+
+        .tab-button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .tab-button.active {
+            background-color: #4caf50;
+        }
+
+        /* Add this style for horizontal alignment of books */
+        .book-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .book {
+            margin: 10px;
+            text-align: center;
+            width: 19%; /* Adjusted width to fit 5 books in a row */
+        }
+
+        .book img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .book-title {
+            margin-bottom: 5px;
+        }
+
+        .book-author {
+            margin-bottom: 15px;
+            font-weight: bold; /* Bolded the author name */
+        }
     </style>
 </head>
 <body>
 
-<h1>Gemma's Book Uploader</h1>
+<h1>Gemma's Book Management</h1>
 
-<form id="upload-form" action="/" method="post" enctype="multipart/form-data">
-    <input type="file" id="file-input" name="file" onchange="loadMetadata()">
-    <br>
-
-   <!-- ... -->
-
-<div id="metadata-container" style="display:none;">
-    <img id="cover-image" alt="Cover Image">
-    <br>
-    <label for="new-title">Title:</label>
-    <input type="text" id="new-title" name="new-title" value="{{ current_metadata.title }}">
-    <br>
-    <label for="new-authors">Authors:</label>
-    <input type="text" id="new-authors" name="new-authors" value="{{ current_metadata.authors }}">
-</div>
+<div>
+    <button class="tab-button active" onclick="openTab('uploader-tab')">Uploader</button>
+    <button class="tab-button" onclick="openTab('library-tab')">Library</button>
 </div>
 
-<!-- ... -->
+<div id="uploader-tab" class="tab">
+    <form id="upload-form" action="/" method="post" enctype="multipart/form-data">
+        <input type="file" id="file-input" name="file" onchange="loadMetadata()">
+        <br>
 
+        <div id="metadata-container" style="display:none;">
+            <img id="cover-image" alt="Cover Image">
+            <br>
+            <label for="new-title">Title:</label>
+            <input type="text" id="new-title" name="new-title" value="{{ current_metadata.title }}">
+            <br>
+            <label for="new-authors">Authors:</label>
+            <input type="text" id="new-authors" name="new-authors" value="{{ current_metadata.authors }}">
+        </div>
 
-    <br>
-    <button type="submit">Upload</button>
-</form>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+<div id="library-tab" class="tab-content" style="display:none;">
+    <!-- Add your Library content here -->
+    <div class="book-container">
+        {% for book in books %}
+            <div class="book">
+                <img src="{{ book.cover_image }}" alt="Cover Image">
+                <div class="book-author">{{ book.authors }}</div>
+                <div class="book-title">{{ book.title }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 <script>
+    function openTab(tabName) {
+        const tabs = document.getElementsByClassName('tab');
+        for (const tab of tabs) {
+            tab.style.display = 'none';
+        }
+
+        const tabButtons = document.getElementsByClassName('tab-button');
+        for (const button of tabButtons) {
+            button.classList.remove('active');
+        }
+
+        document.getElementById(tabName).style.display = 'block';
+        event.currentTarget.classList.add('active');
+    }
+
     function loadMetadata() {
         const fileInput = document.getElementById('file-input');
         const metadataContainer = document.getElementById('metadata-container');
@@ -105,8 +182,8 @@
                         const metadata = JSON.parse(xhr.responseText);
 
                         coverImage.src = metadata.cover_image;
-                        titleInput.value = metadata.title;
-                        authorsInput.value = metadata.authors;
+                        newTitleInput.value = metadata.title;
+                        newAuthorsInput.value = metadata.authors;
                     }
                 };
 
