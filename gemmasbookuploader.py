@@ -159,4 +159,6 @@ def library():
     return render_template('library.html', books=books_in_library)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Start the Flask app
+    app.run(debug=True, port=6000)
+    

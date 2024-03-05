@@ -10,11 +10,12 @@ COPY . /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 5000 available to the world outside this container
-EXPOSE 5000
+# Make port 6000 available to the world outside this container
+EXPOSE 6000
 
 # Define environment variable
 ENV FLASK_APP=gemmasbookuploader.py
 
-# Run gemmasbookuploader.py and booksdscan.py with logs redirected to stdout
-CMD ["sh", "-c", "flask run --host=0.0.0.0 & python -u booksdscan.py & python -u gemmasbookuploader.py"]
+# CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:6000", "gemmasbookuploader:app"]
+CMD ["sh", "-c", "gunicorn gemmasbookuploader:app --bind 0.0.0.0:6000 --workers 4 & python -u booksdscan.py"]
+
