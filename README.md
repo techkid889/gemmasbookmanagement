@@ -1,5 +1,5 @@
 Upload books. See library. Modify Metadata.
 
-/apps/downloads/ = Download Location
-/apps/books/ = Book Location
+/app/downloads/ = Download Location
+/app/books/ = Book Location
 /config/ = Temp / Config Folder
