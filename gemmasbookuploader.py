@@ -19,16 +19,16 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['BOOKS_FOLDER'] = BOOKS_FOLDER
 app.config['DOWNLOADS_FOLDER'] = DOWNLOADS_FOLDER
 
-import ebooklib
-from ebooklib import epub
-import base64
-
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def find_cover_image(book):
     cover_item = None
-    
+
+    # Check if the book is an EPUB
+    if not isinstance(book, epub.EpubBook):
+        return None
+
     # Some EPUBs specify the cover image in the metadata
     meta_cover = book.get_metadata('http://www.idpf.org/2007/opf', 'cover')
     if meta_cover:
@@ -49,8 +49,14 @@ def find_cover_image(book):
 
     return None
 
+
 def get_epub_metadata(file_path):
     try:
+        # Check if the file is an EPUB
+        if not file_path.lower().endswith('.epub'):
+            print(f"File '{file_path}' is not an EPUB. Skipping processing.")
+            return None
+
         book = epub.read_epub(file_path)
 
         # Extract title and authors
@@ -61,7 +67,7 @@ def get_epub_metadata(file_path):
 
         # Attempt to extract the cover image
         cover_bytes = find_cover_image(book)
-        
+
         # Use a default cover image if extraction fails
         if cover_bytes:
             cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
@@ -75,7 +81,7 @@ def get_epub_metadata(file_path):
             'cover_image': cover_image,
         }
     except epub.EpubException as e:
-        print(f"Error reading ePub file '{file_path}': {e}")
+        print(f"Error reading EPUB file '{file_path}': {e}")
         # If an error occurs, still provide the rest of the metadata with no cover
         return {
             'title': "Unknown Title",
@@ -83,7 +89,7 @@ def get_epub_metadata(file_path):
             'cover_image': None,
         }
     except Exception as e:
-        print(f"Error reading ePub file '{file_path}': {e}")
+        print(f"Error reading EPUB file '{file_path}': {e}")
         # If an error occurs, still provide the rest of the metadata with no cover
         return {
             'title': "Unknown Title",
