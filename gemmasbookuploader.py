@@ -21,7 +21,79 @@ app.config['DOWNLOADS_FOLDER'] = DOWNLOADS_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def find_cover_image(book):
+    cover_item = None
+    
+    # Some EPUBs specify the cover image in the metadata
+    meta_cover = book.get_metadata('http://www.idpf.org/2007/opf', 'cover')
+    if meta_cover:
+        cover_id = meta_cover[0][1].get('content')
+        cover_item = book.get_item_with_id(cover_id)
+
+    # If not found, try looking for an item with properties="cover-image"
+    if not cover_item:
+        for item in book.items:
+            if item.get_type() == ebooklib.ITEM_IMAGE:
+                if 'cover-image' in item.get_name().lower() or 'cover' in item.get_name().lower():
+                    cover_item = item
+                    break
+
+    # Returning the content of the cover image if found
+    if cover_item:
+        return cover_item.get_content()
+
+    return None
+
 def get_epub_metadata(file_path):
+    try:
+        book = epub.read_epub(file_path)
+
+        # Extract title and authors
+        title = book.get_metadata('DC', 'title')
+        authors = book.get_metadata('DC', 'creator')
+        title_str = title[0][0] if title else "Unknown Title"
+        authors_str = ', '.join([author[0] for author in authors]) if authors else "Unknown Author"
+
+        # Attempt to extract the cover image
+        cover_bytes = find_cover_image(book)
+        if cover_bytes:
+            cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
+        else:
+            cover_image = None
+
+        return {
+            'title': title_str,
+            'authors': authors_str,
+            'cover_image': cover_image,
+        }
+    except Exception as e:
+        print(f"Error reading ePub file '{file_path}': {e}")
+        return None
+
+    try:
+        book = epub.read_epub(file_path)
+
+        # Extract title and authors
+        title = book.get_metadata('DC', 'title')
+        authors = book.get_metadata('DC', 'creator')
+        title_str = title[0][0] if title else "Unknown Title"
+        authors_str = ', '.join([author[0] for author in authors]) if authors else "Unknown Author"
+
+        # Extract cover image
+        cover_bytes = find_cover_image(book)
+        if cover_bytes:
+            cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
+        else:
+            cover_image = None
+
+        return {
+            'title': title_str,
+            'authors': authors_str,
+            'cover_image': cover_image,
+        }
+    except Exception as e:  # Catching a more general exception for broader error handling
+        print(f"Error reading ePub file '{file_path}': {e}")
+        return None
     try:
         book = epub.read_epub(file_path)
 
