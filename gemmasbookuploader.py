@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify
 import os
+import ebooklib
 from werkzeug.utils import secure_filename
 from ebooklib import epub
 import base64
@@ -17,6 +18,10 @@ ALLOWED_EXTENSIONS = {'epub'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['BOOKS_FOLDER'] = BOOKS_FOLDER
 app.config['DOWNLOADS_FOLDER'] = DOWNLOADS_FOLDER
+
+import ebooklib
+from ebooklib import epub
+import base64
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -56,59 +61,12 @@ def get_epub_metadata(file_path):
 
         # Attempt to extract the cover image
         cover_bytes = find_cover_image(book)
+        
+        # Use a default cover image if extraction fails
         if cover_bytes:
             cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
         else:
-            cover_image = None
-
-        return {
-            'title': title_str,
-            'authors': authors_str,
-            'cover_image': cover_image,
-        }
-    except Exception as e:
-        print(f"Error reading ePub file '{file_path}': {e}")
-        return None
-
-    try:
-        book = epub.read_epub(file_path)
-
-        # Extract title and authors
-        title = book.get_metadata('DC', 'title')
-        authors = book.get_metadata('DC', 'creator')
-        title_str = title[0][0] if title else "Unknown Title"
-        authors_str = ', '.join([author[0] for author in authors]) if authors else "Unknown Author"
-
-        # Extract cover image
-        cover_bytes = find_cover_image(book)
-        if cover_bytes:
-            cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
-        else:
-            cover_image = None
-
-        return {
-            'title': title_str,
-            'authors': authors_str,
-            'cover_image': cover_image,
-        }
-    except Exception as e:  # Catching a more general exception for broader error handling
-        print(f"Error reading ePub file '{file_path}': {e}")
-        return None
-    try:
-        book = epub.read_epub(file_path)
-
-        # Extract title and authors
-        title = book.get_metadata('DC', 'title')
-        authors = book.get_metadata('DC', 'creator')
-        title_str = title[0][0] if title else "Unknown Title"
-        authors_str = ', '.join([author[0] for author in authors]) if authors else "Unknown Author"
-
-        # Extract cover image
-        cover_item = book.get_item_with_id('cover')
-        if cover_item:
-            cover_bytes = cover_item.content
-            cover_image = f"data:image/png;base64,{base64.b64encode(cover_bytes).decode('utf-8')}"
-        else:
+            # Blank out the cover if extraction fails
             cover_image = None
 
         return {
@@ -118,8 +76,22 @@ def get_epub_metadata(file_path):
         }
     except epub.EpubException as e:
         print(f"Error reading ePub file '{file_path}': {e}")
-        return None
+        # If an error occurs, still provide the rest of the metadata with no cover
+        return {
+            'title': "Unknown Title",
+            'authors': "Unknown Author",
+            'cover_image': None,
+        }
+    except Exception as e:
+        print(f"Error reading ePub file '{file_path}': {e}")
+        # If an error occurs, still provide the rest of the metadata with no cover
+        return {
+            'title': "Unknown Title",
+            'authors': "Unknown Author",
+            'cover_image': None,
+        }
 
+   
 def update_epub_metadata(epub_file, new_title, new_authors):
     # Temporary directory to extract ePub contents
     temp_dir = "temp_epub_extract"

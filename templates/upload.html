@@ -5,97 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemma's Book Management</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            margin: 20px;
-        }
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    text-align: center;
+    margin: 20px;
+}
 
-        h1 {
-            color: #333;
-        }
+h1 {
+    color: #333;
+}
 
-        .tab {
-            display: none;
-        }
+.tab {
+    display: none;
+}
 
-        form, .tab-content {
-            max-width: 800px; /* Adjusted max-width for 5 books horizontally */
-            margin: 20px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+form, .tab-content {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
 
-        img {
-            width: 100px; /* Set the size of the cover image */
-            height: 150px; /* Set the size of the cover image */
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
+img {
+    max-height: 150px; /* Limit the maximum height of the images */
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
-        button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+button {
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
-        .tab-button {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 5px;
-        }
+.tab-button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
 
-        .tab-button.active {
-            background-color: #4caf50;
-        }
+.tab-button.active {
+    background-color: #4caf50;
+}
 
-        /* Add this style for horizontal alignment of books */
-        .book-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
+/* Add this style for horizontal alignment of books */
+.book-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
 
-        .book {
-            margin: 10px;
-            text-align: center;
-            width: 19%; /* Adjusted width to fit 5 books in a row */
-        }
+.book {
+    margin: 10px;
+    text-align: center;
+    width: 19%; /* Adjusted width for horizontal spacing */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-        .book img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
+.book img {
+    max-width: 100%; /* Allow the image to adjust its width */
+    height: auto; /* Maintain the aspect ratio */
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
 
-        .book-title {
-            margin-bottom: 5px;
-        }
+.book-title {
+    margin-bottom: 5px;
+}
 
-        .book-author {
-            margin-bottom: 15px;
-            font-weight: bold; /* Bolded the author name */
-        }
+.book-author {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
     </style>
 </head>
 <body>
