@@ -7,6 +7,9 @@ import base64
 import shutil
 import zipfile
 from lxml import etree
+from flask import send_file
+from flask import current_app
+from flask import send_file, current_app
 
 app = Flask(__name__)
 
@@ -203,6 +206,35 @@ def upload_file():
     books_in_library = get_books_in_library()
     return render_template('upload.html', current_metadata=current_metadata, books=books_in_library)
 
+@app.route('/downloads/<path:filename>', methods=["GET"])
+def download_file(filename):
+    # Log the current working directory
+    current_app.logger.info(f"Current working directory: {os.getcwd()}")
+
+    # Remove the '/app/' prefix from the filename
+    filename = filename.replace('app/', '', 1)
+
+    # Construct the full path to the file
+    file_path = os.path.join(filename)
+
+    current_app.logger.info(f"Attempting to download file at path: {file_path}")
+
+    # Check if the file exists and is a file
+    if os.path.exists(file_path):
+        if os.path.isfile(file_path):
+            try:
+                return send_file(file_path, as_attachment=True)
+            except Exception as e:
+                current_app.logger.error(f"Error sending file: {e}")
+                return "Error occurred while trying to send the file.", 500
+        else:
+            current_app.logger.error(f"Path exists but is not a file: {file_path}")
+            return "Path exists but is not a file.", 404
+    else:
+        current_app.logger.error(f"File not found at path: {file_path}")
+        return "File not found", 404
+
+    
 @app.route('/library')
 def library():
     books_in_library = get_books_in_library()

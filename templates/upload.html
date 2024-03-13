@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemma's Book Management</title>
     <style>
+
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -101,6 +103,20 @@ button {
     margin-bottom: 15px;
     font-weight: bold;
 }
+.download-button {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .download-button:hover {
+        background-color: #45a049;
+    }
 
     </style>
 </head>
@@ -132,7 +148,7 @@ button {
         <button type="submit">Upload</button>
     </form>
 </div>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <div id="library-tab" class="tab-content" style="display:none;">
     <!-- Add your Library content here -->
     <div class="book-container">
@@ -141,6 +157,9 @@ button {
                 <img src="{{ book.cover_image }}" alt="Cover Image">
                 <div class="book-author">{{ book.authors }}</div>
                 <div class="book-title">{{ book.title }}</div>
+                <a href="/downloads{{ book.file_path }}" download class="download-button">
+                    <i class="fas fa-download"></i>
+                </a>
             </div>
         {% endfor %}
     </div>
